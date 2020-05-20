@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Tennis Game</title>
+</head>
+<body>
+<canvas id="gameCanvas" width="800" height="600"></canvas>
+
+<script type="text/javascript">
+	var canvas,canvasContext;
+	var ballX=50,ballY=50;
+	var speedX = 10;
+	var speedY = 4;
+	var paddle1Y = 250;
+	const PADDLE_HEIGHT = 100;
+
+	function calculateMousePos(event)
+	{
+		var rect = canvas.getBoundingClientRect();
+		var root = document.documentElement;
+		var mouseX = event.clientX-rect.left-root.scrollLeft;
+		var mouseY = event.clientY - rect.top - root.scrollTop;
+		return{
+			x:mouseX,
+			y:mouseY
+
+		}
+	}
+
+	window.onload = function()
+	{
+		canvas = document.getElementById("gameCanvas");
+		canvasContext = canvas.getContext('2d');
+		var framesPerSecond = 30;
+		setInterval( function()
+			{
+				move();
+				draw();
+			},1000/framesPerSecond);
+
+		canvas.addEventListener('mousemove',function(event)
+			{
+				var mousePos = calculateMousePos(event);
+				paddle1Y = mousePos.y-PADDLE_HEIGHT/2;;
+
+			});
+	
+}
+
+	function move()
+	{
+		ballX=ballX+speedX;
+		if(ballX<0)
+			resetBall();
+		if(ballX>=canvas.width )
+			speedX=-speedX;
+
+		ballY=ballY+speedY;
+		if(ballY>=canvas.height || ballY<0)
+			speedY=-speedY;
+		
+	}
+
+	function draw()
+	{
+		//for black canvas
+		drawColorRect(0,0,canvas.width,canvas.height,'black');
+
+		//for left player paddle
+		drawColorRect(0,paddle1Y,10,PADDLE_HEIGHT,'white');
+
+		//for ball
+		drawColorCirc(ballX,ballY,10,Math.PI*2,true,'white');
+		
+	}
+
+	function drawColorRect(x,y,width,height,drawColor)
+	{
+
+		canvasContext.fillStyle = drawColor;
+		canvasContext.fillRect(x,y,width,height);
+	}
+
+	function drawColorCirc(x,y,radius,portion,clockwise,color)
+	{
+		canvasContext.fillStyle = color;
+		canvasContext.beginPath();
+		canvasContext.arc(x,y,radius,0,portion,clockwise);
+		canvasContext.fill();
+	}
+
+	function resetBall()
+	{
+		speedX=-speedX;
+		ballX = canvas.width/2;
+		ballY=canvas.height/2;
+	}
+
+</script>
+</body>
+</html>
