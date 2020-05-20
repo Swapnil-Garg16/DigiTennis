@@ -12,7 +12,11 @@
 	var speedX = 10;
 	var speedY = 4;
 	var paddle1Y = 250;
+	var paddle2Y = 250;
 	const PADDLE_HEIGHT = 100;
+	const PADDLE_THICKNESS = 10;
+	var player1Score, player2Score;
+	player1Score=player2Score=0;
 
 	function calculateMousePos(event)
 	{
@@ -41,19 +45,53 @@
 		canvas.addEventListener('mousemove',function(event)
 			{
 				var mousePos = calculateMousePos(event);
-				paddle1Y = mousePos.y-PADDLE_HEIGHT/2;;
+				paddle1Y = mousePos.y-PADDLE_HEIGHT/2;
+				//paddle2Y = mousePos.y-PADDLE_HEIGHT/2;
 
 			});
 	
 }
 
+    function compMov()
+    {
+    	var paddle2YCentre = paddle2Y+(PADDLE_HEIGHT/2);
+    	if(paddle2YCentre<ballY-35)
+    		paddle2Y+=6;
+    	else if(paddle2YCentre>ballY+35)
+    		paddle2Y -= 6;
+
+    }
+
 	function move()
 	{
+       compMov();
+
 		ballX=ballX+speedX;
 		if(ballX<0)
-			resetBall();
-		if(ballX>=canvas.width )
-			speedX=-speedX;
+		{
+			if(ballY>paddle1Y && ballY<paddle1Y+PADDLE_HEIGHT)
+			{
+                  speedX=-speedX;
+			}
+			else
+			{
+				resetBall();
+				player2Score++;
+			}
+			
+		}
+		if(ballX>canvas.width )
+		{
+			if(ballY>paddle2Y && ballY<paddle2Y+PADDLE_HEIGHT)
+			{
+                  speedX=-speedX;
+			}
+			else{
+				resetBall();
+				player1Score++;
+			}
+			
+		}
 
 		ballY=ballY+speedY;
 		if(ballY>=canvas.height || ballY<0)
@@ -67,10 +105,16 @@
 		drawColorRect(0,0,canvas.width,canvas.height,'black');
 
 		//for left player paddle
-		drawColorRect(0,paddle1Y,10,PADDLE_HEIGHT,'white');
+		drawColorRect(0,paddle1Y,PADDLE_THICKNESS,PADDLE_HEIGHT,'white');
+        
+        //for right player paddle 
+		drawColorRect(canvas.width-PADDLE_THICKNESS,paddle2Y,PADDLE_THICKNESS,PADDLE_HEIGHT,'white');
 
 		//for ball
 		drawColorCirc(ballX,ballY,10,Math.PI*2,true,'white');
+
+		canvasContext.fillText(player1Score,100,100);
+		canvasContext.fillText(player2Score,canvas.width-100,100);
 		
 	}
 
